@@ -5,6 +5,32 @@ import { getNextDays } from "../utils/getNextDays"
 import { weatherIcons, WeatherIconsKeysProps } from "../utils/weatherIcons"
 import { NextDaysItemProps } from "../components/NextDaysItem"
 
+export interface WeatherResponseProps {
+	temp: number
+	temp_min: number
+	temp_max: number
+	description: string
+	details: (typeof weatherIcons)["Clear"]
+}
+
+export interface WeatherDetailsResponseProps {
+	feels_like: number
+	probability: number
+	wind_speed: number
+	humidity: number
+	temp_kf: number
+}
+
+export interface GetWeatherByCityResponseProps {
+	today: TodayProps
+	nextDays: NextDaysItemProps[]
+}
+
+interface TodayProps {
+	weather: WeatherResponseProps
+	details: WeatherDetailsResponseProps
+}
+
 interface GetWeatherByCityProps {
 	latitude: number
 	longitude: number
@@ -35,7 +61,7 @@ export interface WeatherAPIResponseProps {
 export async function getWeatherByCity({
 	latitude,
 	longitude,
-}: GetWeatherByCityProps) {
+}: GetWeatherByCityProps): Promise<GetWeatherByCityResponseProps> {
 	const { data } = await api.get<WeatherAPIResponseProps>(
 		`/forecast?lat=${latitude}&lon=${longitude}`
 	)
@@ -43,7 +69,7 @@ export async function getWeatherByCity({
 
 	console.log(weather)
 
-	const today = {
+	const today: TodayProps = {
 		weather: {
 			temp: Math.ceil(main.temp),
 			temp_min: Math.floor(main.temp_min),
